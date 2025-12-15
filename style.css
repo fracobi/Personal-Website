@@ -385,8 +385,8 @@ body {
         width: 95vw;
         /* Use more space on mobile */
         max-width: 600px;
-        margin: 20px 0;
-        /* Add scroll margin */
+        margin: 20px auto;
+        /* Add scroll margin & center */
     }
 
     body {
@@ -398,7 +398,7 @@ body {
     }
 
     .tile {
-        min-height: 200px;
+        min-height: 160px;
         /* Disable 3D tilt on mobile for performance */
         transform: none !important;
         transition: transform 0.1s ease-out;
@@ -406,7 +406,7 @@ body {
     }
 
     .hero-tile {
-        min-height: 300px;
+        min-height: 250px;
         /* Slightly shorter than 400 */
         order: 1;
     }
