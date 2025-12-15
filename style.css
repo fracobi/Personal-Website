@@ -1,0 +1,866 @@
+:root {
+    --bg-color: #050508;
+    /* Darker, deeper black/blue */
+    --card-bg: rgba(20, 20, 25, 0.4);
+    /* More transparent for glassmorphism */
+    --card-hover: rgba(40, 40, 50, 0.5);
+    --text-main: #ffffff;
+    --text-muted: #a1a1aa;
+    --accent-color: #00dc82;
+    --accent-glow: rgba(0, 220, 130, 0.4);
+
+    /* New Accents for Tiles */
+    --hero-gradient: radial-gradient(circle at top right, rgba(40, 40, 80, 0.5) 0%, rgba(20, 20, 25, 0.4) 100%);
+    --works-gradient: linear-gradient(to top right, rgba(40, 20, 20, 0.3), rgba(20, 20, 25, 0.4));
+    --about-gradient: linear-gradient(to bottom right, rgba(20, 40, 40, 0.3), rgba(20, 20, 25, 0.4));
+
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-body: 'Outfit', sans-serif;
+    --gap: 20px;
+}
+
+/* --- AURORA BACKGROUND ANIMATION --- */
+body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    /* Stronger, more vibrant gradient */
+    background: radial-gradient(circle at center, rgba(120, 50, 255, 0.25), rgba(50, 200, 255, 0.2), transparent 60%);
+    z-index: -2;
+    animation: aurora 15s infinite alternate ease-in-out;
+    pointer-events: none;
+    filter: blur(60px);
+}
+
+@keyframes aurora {
+    0% {
+        transform: rotate(0deg) translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: rotate(15deg) translate(5%, 5%) scale(1.1);
+    }
+
+    100% {
+        transform: rotate(-15deg) translate(-5%, -10%) scale(1);
+    }
+}
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    cursor: none;
+    /* Hide default cursor */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* --- NOISE BACKGROUND --- */
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* --- CUSTOM CURSOR (Serious/Minimal) --- */
+.cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-main);
+    /* White dot for precision */
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 9999;
+    pointer-events: none !important;
+    /* Critical to prevent blocking */
+}
+
+.cursor-outline {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* Subtle grey ring, not too flashy */
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 9998;
+    pointer-events: none !important;
+    /* Critical to prevent blocking */
+    transition: width 0.15s ease-out, height 0.15s ease-out, border-color 0.2s;
+}
+
+body:hover .cursor-outline {
+    border-color: var(--accent-color);
+}
+
+
+/* --- TILES BASE --- */
+.tile {
+    background-color: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+    overflow: hidden;
+    cursor: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.tile:hover {
+    background-color: var(--card-hover);
+    box-shadow: 0 10px 30px -10px rgba(0, 220, 130, 0.15);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.tile[data-expandable="false"] {
+    cursor: default;
+}
+
+/* --- THE GRID (HUB LAYOUT) --- */
+.bento-container.hub-layout {
+    display: grid;
+    /* 3 Columns, 2 Rows */
+    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: var(--gap);
+    width: 90vw;
+    max-width: 1100px;
+    height: 600px;
+    /* Fixed height for consistent bento feel */
+    grid-template-areas:
+        "hero hero works"
+        "contact about works";
+}
+
+/* --- TILES BASE --- */
+.tile {
+    background-color: var(--card-bg);
+    backdrop-filter: blur(16px);
+    /* Enhanced Glass */
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Slightly brighter border */
+    transition: transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
+    /* Fast transform for Tilt */
+    overflow: hidden;
+    cursor: none;
+    /* Let custom cursor handle it */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transform-style: preserve-3d;
+    /* For 3D Tilt */
+    perspective: 1000px;
+}
+
+.tile:hover {
+    background-color: var(--card-hover);
+    /* Transform handled by JS now for Tilt */
+    box-shadow: 0 10px 30px -10px rgba(0, 220, 130, 0.15);
+    /* Green glow */
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.tile[data-expandable="false"] {
+    cursor: default;
+}
+
+/* --- TILE POSITIONS --- */
+/* --- TILE POSITIONS & IDENTITIES --- */
+/* --- TILE POSITIONS & IDENTITIES --- */
+.hero-tile {
+    grid-area: hero;
+    background: radial-gradient(circle at top right, #2a2a2e 0%, var(--card-bg) 60%);
+    /* Keep subtle dark base */
+}
+
+.works-tile {
+    grid-area: works;
+}
+
+.about-tile {
+    grid-area: about;
+}
+
+.contact-tile {
+    grid-area: contact;
+    background: var(--accent-color);
+    color: #000;
+    transition: background 0.3s ease;
+}
+
+/* --- DYNAMIC SPOTLIGHT EFFECT --- */
+.tile::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* The Spotlight: A colored radial gradient following mouse coordinates */
+    background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y),
+            rgba(100, 100, 255, 0.2),
+            /* Brighter Blue-Purple Glow */
+            transparent 40%);
+    opacity: 0;
+    z-index: 1;
+    /* Above bg, below content */
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+/* Show spotlight on hover */
+.tile:hover::before {
+    opacity: 1;
+}
+
+/* Ensure content stays on top */
+.tile>* {
+    z-index: 2;
+    position: relative;
+}
+
+
+.contact-tile {
+    grid-area: contact;
+    background: var(--accent-color);
+    color: #000;
+    transition: background 0.3s ease;
+}
+
+/* Expanded state override: Dark background */
+.contact-tile.expanded {
+    background: var(--card-bg) !important;
+    color: var(--text-main);
+    cursor: default;
+}
+
+.contact-tile h3,
+.contact-tile p {
+    color: #000;
+    transition: color 0.3s;
+}
+
+/* When expanded, text goes white */
+.contact-tile.expanded h3,
+.contact-tile.expanded p,
+.contact-tile.expanded svg {
+    color: var(--text-main);
+}
+
+/* Ensure the main icon in the closed tile is visible */
+.contact-tile svg {
+    color: #000;
+    /* Dark when green background */
+    transition: color 0.3s;
+}
+
+.contact-tile:hover {
+    background: #00c472;
+}
+
+.contact-tile:hover {
+    background: #00c472;
+}
+
+/* --- PROJECTS GRID (Inside Expanded Works) --- */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.project-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s, background-size 0.5s ease;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gradient Overlay for Readability */
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.3));
+    z-index: 1;
+    transition: opacity 0.3s;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+}
+
+.p-icon,
+.p-info,
+.tag {
+    position: relative;
+    /* Bring content above overlay */
+    z-index: 2;
+}
+
+.p-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.p-info h4 {
+    margin-bottom: 5px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.p-info p {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    color: #ddd;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .bento-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow-y: auto;
+    }
+
+    body {
+        overflow-y: auto;
+        height: auto;
+        display: block;
+    }
+
+    .tile {
+        min-height: 250px;
+    }
+
+    .hero-tile {
+        min-height: 400px;
+    }
+
+    .bento-container.hub-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .hero-tile,
+    .works-tile,
+    .about-tile,
+    .contact-tile {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+}
+
+/* --- CONTENT STYLING --- */
+h1 {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    line-height: 1;
+    margin-bottom: 10px;
+    background: linear-gradient(to right, #fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- MARQUEE / TICKER --- */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+    position: relative;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 30px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.marquee-content {
+    display: flex;
+    gap: 40px;
+    animation: scroll 20s linear infinite;
+    white-space: nowrap;
+}
+
+.marquee-content span {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 2px;
+}
+
+@keyframes scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* --- SVG ICONS --- */
+.tile svg,
+.project-card svg {
+    transition: all 0.3s ease;
+}
+
+/* Only turn icons black if not expanded (Green state) */
+.contact-tile:not(.expanded):hover svg {
+    color: black;
+    stroke: black;
+}
+
+.project-card .p-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.5);
+    /* Darker backing for icon */
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+h3 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    margin-bottom: 5px;
+}
+
+p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: var(--accent-color);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-glow);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.tech-icons {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.tech-icons span {
+    font-weight: 700;
+    opacity: 0.5;
+}
+
+/* --- THE EXPANSION STATE (The Wow Factor) --- */
+.tile.expanded {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: calc(100vw - 40px);
+    height: calc(100vh - 40px);
+    z-index: 1000;
+    cursor: default;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    /* Allow scrolling inside expanded card */
+}
+
+/* Overlay to darken background when expanded */
+body.has-expanded-tile::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+}
+
+/* Reveal full content */
+.full-content {
+    display: block;
+    /* Shown via JS removing 'hidden' class, but let's be explicit in CSS trans */
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease 0.2s backwards;
+}
+
+.full-content.hidden {
+    display: none;
+}
+
+.content.preview {
+    /* Hide preview content when expanded if needed, or keep it as header */
+}
+
+.close-btn {
+    position: fixed;
+    /* Pin to viewport */
+    top: 35px;
+    right: 35px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s, opacity 0.3s;
+    z-index: 2000;
+    /* High z-index to stay on top */
+    opacity: 0;
+    pointer-events: none;
+    /* Not clickable when hidden */
+}
+
+.tile.expanded .close-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- RESPONSIVE (Mobile Fallback) --- */
+@media (max-width: 900px) {
+    .bento-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow-y: auto;
+    }
+
+    body {
+        overflow-y: auto;
+        height: auto;
+        display: block;
+    }
+
+    .tile {
+        min-height: 250px;
+    }
+
+    .hero-tile {
+        min-height: 400px;
+    }
+}
+
+/* --- UTILITIES --- */
+.content.center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    /* Ensure above bg */
+    pointer-events: none;
+    /* Let clicks pass through if needed, but wait, usually this HAS buttons inside */
+}
+
+.content.center>* {
+    pointer-events: auto;
+    /* Re-enable for children */
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* --- PROJECT MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: #1a1a1f;
+    width: 90%;
+    max-width: 800px;
+    height: 85vh;
+    /* Tall vertical modal */
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: translateY(0);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.modal-header {
+    padding: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.modal-icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--accent-color);
+}
+
+.modal-body {
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.media-container {
+    width: 100%;
+    height: 300px;
+    background: #000;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.placeholder-video {
+    color: rgba(255, 255, 255, 0.3);
+    font-family: monospace;
+}
+
+.text-content h3 {
+    color: var(--text-main);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.text-content h3:first-child {
+    margin-top: 0;
+}
+
+.tech-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.tech-tags span {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+    border: 1px solid rgba(0, 220, 130, 0.2);
+}
+
+.actions {
+    margin-top: 20px;
+}
+
+.full-width {
+    width: 100%;
+    text-align: center;
+}
+
+/* --- CONTACT CARD LINKS --- */
+.contact-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 220, 130, 0.1);
+}
+
+.contact-card .p-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+/* Force white icons in expanded contact cards regardless of parent hover state */
+.contact-tile.expanded .contact-card svg {
+    color: white !important;
+}
+
+.contact-card:hover svg {
+    color: var(--accent-color) !important;
+    stroke: var(--accent-color);
+}
+
+.contact-card:hover .p-icon {
+    background: rgba(0, 220, 130, 0.1);
+}
+
+.contact-card:hover svg {
+    color: var(--accent-color);
+    /* Hover state: Green */
+    stroke: var(--accent-color);
+}
