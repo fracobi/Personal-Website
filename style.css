@@ -84,39 +84,50 @@ body {
 }
 
 /* --- CUSTOM CURSOR (Serious/Minimal) --- */
-.cursor-dot {
-    width: 6px;
-    height: 6px;
-    background-color: var(--text-main);
-    /* White dot for precision */
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9999;
-    pointer-events: none !important;
-    /* Critical to prevent blocking */
+@media (pointer: fine) {
+    .cursor-dot {
+        width: 6px;
+        height: 6px;
+        background-color: var(--text-main);
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        z-index: 9999;
+        pointer-events: none !important;
+    }
+
+    .cursor-outline {
+        width: 18px;
+        height: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        z-index: 9998;
+        pointer-events: none !important;
+        transition: width 0.15s ease-out, height 0.15s ease-out, border-color 0.2s;
+    }
+
+    body:hover .cursor-outline {
+        border-color: var(--accent-color);
+    }
 }
 
-.cursor-outline {
-    width: 18px;
-    height: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    /* Subtle grey ring, not too flashy */
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9998;
-    pointer-events: none !important;
-    /* Critical to prevent blocking */
-    transition: width 0.15s ease-out, height 0.15s ease-out, border-color 0.2s;
-}
+@media (pointer: coarse) {
 
-body:hover .cursor-outline {
-    border-color: var(--accent-color);
+    .cursor-dot,
+    .cursor-outline {
+        display: none;
+    }
+
+    * {
+        cursor: auto;
+        /* Reset cursor for touch */
+    }
 }
 
 
@@ -373,20 +384,32 @@ body:hover .cursor-outline {
         flex-direction: column;
         height: auto;
         overflow-y: auto;
+        width: 95vw;
+        /* Use more space on mobile */
+        max-width: 600px;
+        margin: 20px 0;
+        /* Add scroll margin */
     }
 
     body {
         overflow-y: auto;
         height: auto;
         display: block;
+        /* Allow normal scrolling flow */
+        padding: 20px 0;
     }
 
     .tile {
         min-height: 250px;
+        /* Disable 3D tilt on mobile for performance */
+        transform: none !important;
+        transition: transform 0.1s ease-out;
+        /* Keep basic hover check but kill tilt */
     }
 
     .hero-tile {
-        min-height: 400px;
+        min-height: 350px;
+        /* Slightly shorter than 400 */
     }
 
     .bento-container.hub-layout {
@@ -394,12 +417,77 @@ body:hover .cursor-outline {
         grid-template-rows: auto;
     }
 
+    /* Revert grid areas for stacking */
     .hero-tile,
     .works-tile,
     .about-tile,
     .contact-tile {
-        grid-column: span 1;
-        grid-row: span 1;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    /* Reset spotlight on mobile/touch */
+    .tile::before {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.5rem;
+        /* Smaller H1 */
+    }
+
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    .tile {
+        padding: 20px;
+        min-height: 200px;
+    }
+
+    .hero-tile h2 {
+        font-size: 1.1rem;
+    }
+
+    /* Mobile Modal adjustments */
+    .modal-content {
+        width: 95%;
+        height: 90vh;
+        border-radius: 12px;
+    }
+
+    .modal-header {
+        padding: 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .media-container {
+        height: 200px;
+    }
+
+    .marquee-content span {
+        font-size: 1.1rem;
+        gap: 20px;
+    }
+
+    /* Ensure close buttons are tappable */
+    .close-btn {
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        /* Larger touch target */
+    }
+
+    .close-modal {
+        top: 10px;
+        right: 15px;
+        padding: 10px;
+        /* Hit area */
     }
 }
 
@@ -410,6 +498,7 @@ h1 {
     line-height: 1;
     margin-bottom: 10px;
     background: linear-gradient(to right, #fff, #aaa);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -591,9 +680,7 @@ body.has-expanded-tile::after {
     display: none;
 }
 
-.content.preview {
-    /* Hide preview content when expanded if needed, or keep it as header */
-}
+
 
 .close-btn {
     position: fixed;
