@@ -398,7 +398,7 @@ body {
     }
 
     .tile {
-        min-height: 250px;
+        min-height: 200px;
         /* Disable 3D tilt on mobile for performance */
         transform: none !important;
         transition: transform 0.1s ease-out;
@@ -406,8 +406,21 @@ body {
     }
 
     .hero-tile {
-        min-height: 350px;
+        min-height: 300px;
         /* Slightly shorter than 400 */
+        order: 1;
+    }
+
+    .about-tile {
+        order: 2;
+    }
+
+    .works-tile {
+        order: 3;
+    }
+
+    .contact-tile {
+        order: 4;
     }
 
 
