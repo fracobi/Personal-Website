@@ -377,9 +377,7 @@ body {
 
 /* --- RESPONSIVE --- */
 @media (max-width: 900px) {
-    .bento-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
+    .bento-container.hub-layout {
         display: flex;
         flex-direction: column;
         height: auto;
@@ -412,10 +410,7 @@ body {
         /* Slightly shorter than 400 */
     }
 
-    .bento-container.hub-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-    }
+
 
     /* Revert grid areas for stacking */
     .hero-tile,
